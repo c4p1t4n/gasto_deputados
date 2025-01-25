@@ -1,5 +1,5 @@
 terraform {
-    required_version = ">=1.10.3"
+    required_version = "1.10.3"
     backend "s3" {
         bucket = "terraform-states-9723"
         key = "gastos_deputados/state.tfstate"
