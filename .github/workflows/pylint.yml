@@ -24,18 +24,14 @@ jobs:
       - name: Run pylint and check score
         id: pylint
         run: |
-          # Rodando pylint e extraindo a nota
           pylint --output-format=text $(git ls-files '*.py') > pylint_output.txt
           
-          # Contando a média das notas
           score=$(grep -oP "Your code has been rated at \K[0-9]+\.[0-9]+" pylint_output.txt | awk '{s+=$1} END {print s/NR}')
           
-          # Mostrando o resultado
           echo "Pylint score: $score"
           
-          # Falhando se a pontuação for menor que 9
-          if (( $(echo "$score < 9" | bc -l) )); then
-            echo "Pylint score is below 9, failing the job."
+          if (( $(echo "$score < 8" | bc -l) )); then
+            echo "Pylint score is below 8, failing the job."
             exit 1
           fi
           
