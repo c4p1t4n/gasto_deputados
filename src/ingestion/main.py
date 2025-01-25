@@ -1,8 +1,8 @@
 import requests
-import awswrangler as wr
-import pandas as pd
 from datetime import datetime
 import logging
+import pandas as pd
+
 from src.utils.main import upload_s3_parquet_file
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 def get_current_legislatura():
@@ -15,45 +15,44 @@ def get_current_legislatura():
         'ordenarPor': 'id'
     }
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params,timeout=30)
         response.raise_for_status()
-    
-        data = response.json().get('dados',[])
-        if not data:
+        data_response = response.json().get('dados',[])
+        if not data_response:
             logging.error("No data found")
             return 
         return data[0].get('id')
     except requests.exceptions.RequestException as e:
-        logging.error(f"Request error occurred: {e}")
+        logging.error("Request error occurred: %s",e)
     except ValueError as e:
-        logging.error(f"Error processing JSON response: {e}")
+        logging.error("Error processing JSON response: %s",e)
     except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
+        logging.error("An unexpected error occurred: %s",e)
 
 
-def get_current_deputados(id):
+def get_current_deputados(id_deputado:str):
     url = 'https://dadosabertos.camara.leg.br/api/v2/deputados'
 
     params = {
-        'idLegislatura': id,
+        'idLegislatura': id_deputado,
         'ordem': 'ASC',
         'ordenarPor': 'nome'
     }
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params,timeout=30)
         response.raise_for_status()
     
-        data = response.json()
-        if not data:
+        data_response = response.json()
+        if not data_response:
             logging.error("No data found")
             return 
         return data
     except requests.exceptions.RequestException as e:
-        logging.error(f"Request error occurred: {e}")
+        logging.error("Request error occurred: %s",e)
     except ValueError as e:
-        logging.error(f"Error processing JSON response: {e}")
+        logging.error("Error processing JSON response: %s",e)
     except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
+        logging.error("An unexpected error occurred: %s",e)
 
 def get_despesas_per_deputado(id_deputado:str):
     url = f"https://dadosabertos.camara.leg.br/api/v2/deputados/{id_deputado}/despesas"
@@ -62,24 +61,24 @@ def get_despesas_per_deputado(id_deputado:str):
         'ordenarPor': 'ano'
     }
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params,timeout=30)
         response.raise_for_status()
     
-        data = response.json()
-        if not data:
+        data_response = response.json()
+        if not data_response:
             logging.error("No data found")
             return 
         return data
     except requests.exceptions.RequestException as e:
-        logging.error(f"Request error occurred: {e}")
+        logging.error("Request error occurred: %s",e)
     except ValueError as e:
-        logging.error(f"Error processing JSON response: {e}")
+        logging.error("Error processing JSON response: %s",e)
     except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
+        logging.error("An unexpected error occurred: %s",e)
 
 
 def lambda_handler(event,context):
-    current_legislatura_id = get_current_legislatura()
+    pass
 
 
 

@@ -1,7 +1,5 @@
 import pytest
 import pandas as pd
-import awswrangler as wr
-import logging
 import boto3
 from src.utils.main import upload_s3_parquet_file  # Ajuste o caminho para o módulo correto
 
@@ -14,7 +12,6 @@ def test_upload_s3_parquet_file_integration(s3_bucket):
     df = pd.DataFrame({"col1": [1, 2, 3], "col2": ["a", "b", "c"]})
 
     path = f"s3://{s3_bucket}/test-folder/"
-    
     upload_s3_parquet_file(path, df)
     s3_client= boto3.client('s3')
     try:
