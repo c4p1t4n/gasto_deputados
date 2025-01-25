@@ -1,6 +1,7 @@
+import logging
 import awswrangler as wr
 import pandas as pd
-import logging
+
 def upload_s3_parquet_file(path:str,df:pd.DataFrame):
     """
     Uploads a Pandas DataFrame to an S3 bucket as a Parquet file.
