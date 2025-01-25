@@ -26,10 +26,16 @@ jobs:
         run: |
           pylint --output-format=text $(git ls-files '*.py') > pylint_output.txt
           
-          score=$(grep -oP "Your code has been rated at \K[0-9]+\.[0-9]+" pylint_output.txt | awk '{s+=$1} END {print s/NR}')
+          # Verificando se a pontuação foi gerada corretamente
+          score=$(grep -o "Your code has been rated at [0-9]*\.[0-9]*" pylint_output.txt | awk '{print $7}')
           
           echo "Pylint score: $score"
           
+          if [ -z "$score" ]; then
+            echo "Error: Could not retrieve pylint score"
+            exit 1
+          fi
+
           if (( $(echo "$score < 8" | bc -l) )); then
             echo "Pylint score is below 8, failing the job."
             exit 1
