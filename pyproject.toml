@@ -10,3 +10,11 @@ dependencies = [
     "pytest-mock>=3.14.0",
     "requests>=2.32.3",
 ]
+[tool.pylint."MESSAGES CONTROL"]
+disable = ["C"]  # Disables all convention messages
+
+[tool.pylint."BASIC"]
+good-names = ["i", "j", "k", "x", "y", "z"]
+
+[tool.pylint."FORMAT"]
+max-line-length = 100  
