@@ -83,7 +83,7 @@ resource "aws_glue_catalog_table" "gastos" {
     }
 
     storage_descriptor {
-        location      = "s3://${aws_s3_bucket.main_bucket-dev.bucket}/gastos/"
+        location      = "s3://${aws_s3_bucket.main_bucket-dev.bucket}/processed/gastos/"
         input_format  = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat"
         output_format = "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat"
 
