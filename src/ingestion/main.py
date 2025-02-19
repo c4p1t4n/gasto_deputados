@@ -7,7 +7,6 @@ from src.utils.main import upload_s3_parquet_file
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 def get_current_legislatura():
     current_date = datetime.now().strftime('%Y-%m-%d')
-
     url = "https://dadosabertos.camara.leg.br/api/v2/legislaturas"
     params = {
         'data': current_date,
@@ -21,7 +20,7 @@ def get_current_legislatura():
         if not data_response:
             logging.error("No data found")
             return 
-        return data[0].get('id')
+        return data_response[0].get('id')
     except requests.exceptions.RequestException as e:
         logging.error("Request error occurred: %s",e)
     except ValueError as e:
@@ -31,7 +30,8 @@ def get_current_legislatura():
 
 
 def get_current_deputados(id_deputado:str):
-    url = 'https://dadosabertos.camara.leg.br/api/v2/deputados'
+    logging.info("Getting  current deputados")
+    url_deputados = 'https://dadosabertos.camara.leg.br/api/v2/deputados'
 
     params = {
         'idLegislatura': id_deputado,
@@ -39,14 +39,14 @@ def get_current_deputados(id_deputado:str):
         'ordenarPor': 'nome'
     }
     try:
-        response = requests.get(url, params=params,timeout=30)
+        response = requests.get(url_deputados, params=params,timeout=30)
         response.raise_for_status()
     
         data_response = response.json()
         if not data_response:
             logging.error("No data found")
             return 
-        return data
+        return data_response
     except requests.exceptions.RequestException as e:
         logging.error("Request error occurred: %s",e)
     except ValueError as e:
@@ -55,20 +55,21 @@ def get_current_deputados(id_deputado:str):
         logging.error("An unexpected error occurred: %s",e)
 
 def get_despesas_per_deputado(id_deputado:str):
-    url = f"https://dadosabertos.camara.leg.br/api/v2/deputados/{id_deputado}/despesas"
+    logging.info("Getting  current  depesas per deputado %s",id_deputado)
+    url_despesas = f"https://dadosabertos.camara.leg.br/api/v2/deputados/{id_deputado}/despesas"
     params = {
         'ordem':'DESC',
         'ordenarPor': 'ano'
     }
     try:
-        response = requests.get(url, params=params,timeout=30)
-        response.raise_for_status()
+        response_despesas = requests.get(url_despesas, params=params,timeout=30)
+        response_despesas.raise_for_status()
     
-        data_response = response.json()
+        data_response = response_despesas.json()
         if not data_response:
             logging.error("No data found")
             return 
-        return data
+        return data_response
     except requests.exceptions.RequestException as e:
         logging.error("Request error occurred: %s",e)
     except ValueError as e:
@@ -83,6 +84,7 @@ def lambda_handler(event,context):
 
 
 current_legislatura_id = get_current_legislatura()
+logging.info("Current legislatura id: %s",current_legislatura_id)
 data =  get_current_deputados(current_legislatura_id)
 df = pd.DataFrame.from_dict(data['dados'])
 df_spending = pd.DataFrame()
@@ -92,5 +94,5 @@ for x in df.id.to_list():
     temp_df['id'] = x
     df_spending = pd.concat([df_spending,temp_df],ignore_index=True)
 
-upload_s3_parquet_file(df=df,path='s3://gastos-deputados-9723-dev/deputados/')
-upload_s3_parquet_file(df=df_spending,path='s3://gastos-deputados-9723-dev/gastos/')
+upload_s3_parquet_file(df=df,path='s3://gastos-deputados-9723-dev/raw/deputados/')
+upload_s3_parquet_file(df=df_spending,path='s3://gastos-deputados-9723-dev/raw/gastos/')
