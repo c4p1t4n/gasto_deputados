@@ -41,33 +41,23 @@ def write_s3_data(df: DataFrame, s3_path: str) -> None:
 
 
 
-s3_path = os.getenv("source_s3_path",default="s3a://gastos-deputados-9723-dev/raw/gastos/")
+s3_path = os.getenv("source_s3_path",default="s3a://gastos-deputados-9723-dev/raw/deputados/")
 
 
 df = read_s3_data(s3_path)
 
 df = df.select(
     F.col('id').cast(IntegerType()).alias('id'),
-    F.col('ano').cast(IntegerType()).alias('ano'),
-    F.col('mes').cast(IntegerType()).alias('mes'),
-    F.col('tipoDespesa').cast(StringType()).alias('tipoDespesa'),
-    F.col('codDocumento').cast(IntegerType()).alias('codDocumento'),
-    F.col('tipoDocumento').cast(StringType()).alias('tipoDocumento'),
-    F.col('codTipoDocumento').cast(IntegerType()).alias('codTipoDocumento'),
-    F.col('dataDocumento').cast(TimestampType()).alias('dataDocumento'),
-    F.col('numDocumento').cast(StringType()).alias('numDocumento'),
-    F.col('valorDocumento').cast(FloatType()).alias('valorDocumento'),
-    F.col('urlDocumento').cast(StringType()).alias('urlDocumento'),
-    F.col('nomeFornecedor').cast(StringType()).alias('nomeFornecedor'),
-    F.col('cnpjCpfFornecedor').cast(StringType()).alias('cnpjCpfFornecedor'),
-    F.col('valorLiquido').cast(FloatType()).alias('valorLiquido'),
-    F.col('valorGlosa').cast(FloatType()).alias('valorGlosa'),
-    F.col('numRessarcimento').cast(StringType()).alias('numRessarcimento'),
-    F.col('codLote').cast(IntegerType()).alias('codLote'),
-    F.col('parcela').cast(IntegerType()).alias('parcela')
+    F.col('uri').cast(StringType()).alias('uri'),
+    F.col('nome').cast(StringType()).alias('nome'),
+    F.col('siglaPartido').cast(StringType()).alias('siglaPartido'),
+    F.col('uriPartido').cast(StringType()).alias('uriPartido'),
+    F.col('siglaUf').cast(StringType()).alias('siglaUf'),
+    F.col('idLegislatura').cast(IntegerType()).alias('idLegislatura'),
+    F.col('urlFoto').cast(StringType()).alias('urlFoto')
 )
 df = df.dropDuplicates(['id'])
-s3_destiny_path = os.getenv("s3_destiny_path",default="s3a://gastos-deputados-9723-dev/processed/gastos/") 
+s3_destiny_path = os.getenv("s3_destiny_path",default="s3a://gastos-deputados-9723-dev/processed/deputados/") 
 write_s3_data(df, s3_destiny_path)
 
 
